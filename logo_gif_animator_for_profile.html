@@ -1,0 +1,2631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logo &amp; Profile GIF Studio — 60 FPS · Anti-Pixelation (&lt; 1 MB)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Custom subtle light checkerboard for transparent preview awareness */
+    .checkerboard-bg {
+      background-color: #f8fafc;
+      background-image:
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    /* Smooth range slider styling for Light Studio UI */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #4f46e5;
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+      background: #4338ca;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #4f46e5;
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+    }
+
+    /* Custom subtle light scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f4f6f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-[#f4f6f9] text-[#0f172a] font-sans antialiased selection:bg-indigo-500/20 selection:text-indigo-900">
+  <!-- Top Navigation Header -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-[#e2e8f0] sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-[#0f172a]">Logo &amp; Profile GIF Studio</h1>
+            <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              60 FPS · HD Adaptive · &lt; 1 MB
+            </span>
+          </div>
+          <p class="text-xs text-[#475569] hidden sm:block">Zero-banding per-frame 256-color GIF89a engine for Google Account profiles</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button
+          id="useSampleBtn"
+          type="button"
+          class="px-3 py-2 text-xs sm:text-sm font-medium text-[#0f172a] bg-slate-100 hover:bg-slate-200/80 border border-[#e2e8f0] rounded-xl transition cursor-pointer"
+        >
+          Reset Sample Pair
+        </button>
+        <button
+          id="topExportBtn"
+          type="button"
+          class="px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#4f46e5] hover:bg-indigo-700 rounded-xl shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5 cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Export GIF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast Banner -->
+  <div id="toastBanner" class="hidden fixed bottom-5 right-5 z-50 max-w-sm bg-white text-[#0f172a] px-4 py-3 rounded-2xl shadow-xl border border-[#e2e8f0] flex items-center gap-3 text-sm transition-all">
+    <span id="toastIcon" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+    <span id="toastMessage" class="leading-snug font-medium">Notification</span>
+  </div>
+
+  <!-- Main 2-Column Workspace (Controls Left, Sticky Preview Right) -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+
+      <!-- LEFT COLUMN: Controls & Customization (7 cols on lg) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- 1. Dual-Image Upload & Framing Controls -->
+        <section class="bg-white rounded-2xl border border-[#e2e8f0] shadow-sm p-5 sm:p-6 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-[#0f172a]">1. Upload Images (Image 1 &amp; Image 2)</h3>
+              <p class="text-xs text-[#475569] mt-0.5">Upload 2 images for dual-transition loops, or remove Image 2 for single-logo mode</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                id="multiUploadBtn"
+                type="button"
+                class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-[#4f46e5] border border-indigo-200 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
+                title="Select 2 files at once"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                <span>Select 2 Files</span>
+              </button>
+              <button
+                id="swapImagesBtn"
+                type="button"
+                class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-[#0f172a] border border-[#e2e8f0] text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
+                title="Swap Image 1 and Image 2"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                <span>Swap</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hidden File Inputs -->
+          <input id="multiFileInput" type="file" multiple accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden" />
+          <input id="fileInput1" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden" />
+          <input id="fileInput2" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden" />
+
+          <!-- Side-by-Side Image 1 & Image 2 Cards -->
+          <div id="dualDropContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Slot 1: Image 1 / Front -->
+            <div
+              id="slotCard1"
+              class="rounded-2xl border-2 border-[#4f46e5] bg-indigo-50/40 p-3.5 transition space-y-3"
+            >
+              <div class="flex items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0f172a]">
+                  <span class="w-5 h-5 rounded-md bg-[#4f46e5] text-white text-[11px] flex items-center justify-center">1</span>
+                  <span>Image 1 / Front</span>
+                </span>
+                <div class="flex items-center gap-1">
+                  <button
+                    id="replaceBtn1"
+                    type="button"
+                    class="px-2 py-1 rounded-lg bg-white hover:bg-slate-50 border border-[#e2e8f0] text-[11px] font-semibold text-[#0f172a] transition cursor-pointer"
+                  >
+                    Replace
+                  </button>
+                  <button
+                    id="removeBtn1"
+                    type="button"
+                    class="p-1 rounded-lg bg-white hover:bg-rose-50 border border-[#e2e8f0] hover:border-rose-200 text-[#475569] hover:text-rose-600 transition cursor-pointer"
+                    title="Clear Image 1"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                id="dropZone1"
+                role="button"
+                tabindex="0"
+                class="relative h-32 rounded-xl border-2 border-dashed border-slate-300 hover:border-[#4f46e5] checkerboard-bg overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer group transition"
+              >
+                <img id="thumb1" alt="Image 1 Thumbnail" class="max-h-24 max-w-full object-contain rounded-lg" />
+                <div id="emptyPrompt1" class="hidden flex flex-col items-center justify-center">
+                  <svg class="w-6 h-6 text-[#4f46e5] mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span class="text-xs font-semibold text-[#0f172a]">Drop or Browse Image 1</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] text-[#475569]">
+                <span id="name1" class="truncate font-medium text-[#0f172a] max-w-[140px]">Sample Brand Mark</span>
+                <button
+                  type="button"
+                  data-adjust-slot="1"
+                  class="adjust-slot-btn font-semibold text-[#4f46e5] hover:text-indigo-700 hover:underline cursor-pointer"
+                >
+                  Adjust Framing
+                </button>
+              </div>
+            </div>
+
+            <!-- Slot 2: Image 2 / Back -->
+            <div
+              id="slotCard2"
+              class="rounded-2xl border border-[#e2e8f0] bg-slate-50/70 p-3.5 transition space-y-3"
+            >
+              <div class="flex items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0f172a]">
+                  <span class="w-5 h-5 rounded-md bg-violet-600 text-white text-[11px] flex items-center justify-center">2</span>
+                  <span>Image 2 / Back</span>
+                </span>
+                <div class="flex items-center gap-1">
+                  <button
+                    id="replaceBtn2"
+                    type="button"
+                    class="px-2 py-1 rounded-lg bg-white hover:bg-slate-50 border border-[#e2e8f0] text-[11px] font-semibold text-[#0f172a] transition cursor-pointer"
+                  >
+                    Replace
+                  </button>
+                  <button
+                    id="removeBtn2"
+                    type="button"
+                    class="p-1 rounded-lg bg-white hover:bg-rose-50 border border-[#e2e8f0] hover:border-rose-200 text-[#475569] hover:text-rose-600 transition cursor-pointer"
+                    title="Remove Image 2 (switch to 1-image mode)"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                id="dropZone2"
+                role="button"
+                tabindex="0"
+                class="relative h-32 rounded-xl border-2 border-dashed border-slate-300 hover:border-violet-500 checkerboard-bg overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer group transition"
+              >
+                <img id="thumb2" alt="Image 2 Thumbnail" class="max-h-24 max-w-full object-contain rounded-lg" />
+                <div id="emptyPrompt2" class="hidden flex flex-col items-center justify-center">
+                  <svg class="w-6 h-6 text-violet-600 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span class="text-xs font-semibold text-[#0f172a]">Drop or Browse Image 2</span>
+                  <span class="text-[10px] text-[#475569]">Optional (for 2-image transitions)</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] text-[#475569]">
+                <span id="name2" class="truncate font-medium text-[#0f172a] max-w-[140px]">Sample Crest Badge</span>
+                <button
+                  type="button"
+                  data-adjust-slot="2"
+                  class="adjust-slot-btn font-semibold text-violet-600 hover:text-violet-700 hover:underline cursor-pointer"
+                >
+                  Adjust Framing
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Individual Framing & Backdrop Bar -->
+          <div class="bg-[#f4f6f9]/80 rounded-2xl p-4 border border-[#e2e8f0] space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#e2e8f0] pb-3">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-[#0f172a] mr-1">Framing For:</span>
+                <button
+                  type="button"
+                  id="framingTab1"
+                  class="px-3 py-1 rounded-lg bg-[#4f46e5] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+                >
+                  Image 1
+                </button>
+                <button
+                  type="button"
+                  id="framingTab2"
+                  class="px-3 py-1 rounded-lg bg-white text-[#475569] border border-[#e2e8f0] text-xs font-semibold transition cursor-pointer"
+                >
+                  Image 2
+                </button>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-semibold text-[#475569]">Fit:</span>
+                <button
+                  type="button"
+                  id="fitContainBtn"
+                  class="px-2.5 py-1 rounded-lg bg-indigo-50 text-[#4f46e5] border border-indigo-200 text-[11px] font-bold transition cursor-pointer"
+                >
+                  Contain (Logo)
+                </button>
+                <button
+                  type="button"
+                  id="fitCoverBtn"
+                  class="px-2.5 py-1 rounded-lg bg-white text-[#475569] border border-[#e2e8f0] text-[11px] font-semibold transition cursor-pointer"
+                >
+                  Cover (Photo)
+                </button>
+                <button
+                  type="button"
+                  id="resetFramingBtn"
+                  class="px-2 py-1 rounded-lg text-[11px] font-medium text-[#475569] hover:text-[#0f172a] cursor-pointer"
+                  title="Reset zoom and position"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              <!-- Zoom / Scale -->
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="logoScaleSlider" class="text-xs font-semibold text-[#0f172a]">Zoom / Scale</label>
+                  <span id="logoScaleVal" class="text-xs font-bold text-[#4f46e5]">74%</span>
+                </div>
+                <input id="logoScaleSlider" type="range" min="45" max="155" value="74" class="w-full" />
+              </div>
+
+              <!-- Horizontal Offset X -->
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="offsetXSlider" class="text-xs font-semibold text-[#0f172a]">Pan X</label>
+                  <span id="offsetXVal" class="text-xs font-bold text-[#475569]">0%</span>
+                </div>
+                <input id="offsetXSlider" type="range" min="-35" max="35" value="0" class="w-full" />
+              </div>
+
+              <!-- Vertical Offset Y -->
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="offsetYSlider" class="text-xs font-semibold text-[#0f172a]">Pan Y</label>
+                  <span id="offsetYVal" class="text-xs font-bold text-[#475569]">0%</span>
+                </div>
+                <input id="offsetYSlider" type="range" min="-35" max="35" value="0" class="w-full" />
+              </div>
+            </div>
+
+            <!-- Backdrop Fill / Transparency Selector -->
+            <div class="pt-2 border-t border-[#e2e8f0] flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span class="text-xs font-semibold text-[#0f172a]">Backdrop:</span>
+                <span id="bgColorHex" class="ml-1.5 text-xs font-mono font-semibold text-[#4f46e5]">#FFFFFF</span>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button type="button" data-bg="#FFFFFF" class="bg-swatch w-7 h-7 rounded-lg border-2 border-[#4f46e5] bg-white shadow-xs cursor-pointer" title="Pure White"></button>
+                <button type="button" data-bg="#F4F6F9" class="bg-swatch w-7 h-7 rounded-lg border border-slate-300 bg-[#f4f6f9] shadow-xs cursor-pointer" title="Soft Light Slate"></button>
+                <button type="button" data-bg="#EEF2FF" class="bg-swatch w-7 h-7 rounded-lg border border-slate-300 bg-indigo-50 shadow-xs cursor-pointer" title="Soft Indigo Tint"></button>
+                <button type="button" data-bg="#0F172A" class="bg-swatch w-7 h-7 rounded-lg border border-slate-300 bg-slate-900 shadow-xs cursor-pointer" title="Dark Slate"></button>
+                <button
+                  type="button"
+                  id="autoBlurBgBtn"
+                  class="px-2.5 h-7 rounded-lg border border-[#e2e8f0] bg-white hover:bg-slate-50 text-[11px] font-semibold text-[#0f172a] transition cursor-pointer"
+                  title="Blurred image backdrop for non-square photos"
+                >
+                  Auto-Blur
+                </button>
+                <button
+                  type="button"
+                  id="transparentBgBtn"
+                  class="px-2.5 h-7 rounded-lg border border-[#e2e8f0] bg-white hover:bg-slate-50 text-[11px] font-semibold text-[#0f172a] transition cursor-pointer"
+                  title="Transparent GIF89a background for shaped PNG/SVG logos"
+                >
+                  Transparent
+                </button>
+                <label class="w-7 h-7 rounded-lg border border-slate-300 overflow-hidden cursor-pointer flex items-center justify-center bg-gradient-to-tr from-rose-500 via-amber-400 to-indigo-500" title="Custom Color">
+                  <input id="bgColorPicker" type="color" value="#FFFFFF" class="opacity-0 w-0 h-0" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Animation Style Presets (12 Dual-Image + 8 Single-Image) -->
+        <section class="bg-white rounded-2xl border border-[#e2e8f0] shadow-sm p-5 sm:p-6 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-[#0f172a]">2. Seamless Profile Animations</h3>
+              <p id="presetSubtitle" class="text-xs text-[#475569] mt-0.5">12 dual-image transitions &amp; 8 single-image loops tuned for circular avatars</p>
+            </div>
+            <div class="inline-flex rounded-xl bg-[#f4f6f9] p-1 border border-[#e2e8f0] text-xs font-semibold">
+              <button type="button" id="filterDualBtn" class="px-2.5 py-1 rounded-lg bg-[#4f46e5] text-white shadow-xs transition cursor-pointer">
+                2-Image (12)
+              </button>
+              <button type="button" id="filterSingleBtn" class="px-2.5 py-1 rounded-lg text-[#475569] hover:text-[#0f172a] transition cursor-pointer">
+                1-Image (8)
+              </button>
+            </div>
+          </div>
+
+          <!-- 12 Dual-Image Presets Grid -->
+          <div id="dualPresetGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            <!-- 1. 3D Coin Flip -->
+            <button type="button" data-preset="dual-flip" class="preset-card active text-left p-3 rounded-xl border-2 border-[#4f46e5] bg-indigo-50/60 transition cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-[#0f172a]">1. 3D Coin Flip</span>
+                <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-[#4f46e5]">Top</span>
+              </div>
+              <div class="text-[11px] text-[#475569]">Horizontal 3D turn + specular sheen</div>
+            </button>
+
+            <!-- 2. 3D Vertical Flip -->
+            <button type="button" data-preset="dual-vflip" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">2. 3D Vertical Flip</div>
+              <div class="text-[11px] text-[#475569]">Sleek top-to-bottom 3D turnover</div>
+            </button>
+
+            <!-- 3. 3D Cube Rotate -->
+            <button type="button" data-preset="dual-cube" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-[#0f172a]">3. 3D Cube Rotate</span>
+                <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-violet-100 text-violet-700">3D</span>
+              </div>
+              <div class="text-[11px] text-[#475569]">Perspective 90° cubic face turn</div>
+            </button>
+
+            <!-- 4. Orbital Spin Switch -->
+            <button type="button" data-preset="dual-orbital" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-[#0f172a]">4. Orbital Spin Switch</span>
+                <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Avatar</span>
+              </div>
+              <div class="text-[11px] text-[#475569]">Smooth rotational swirl swap</div>
+            </button>
+
+            <!-- 5. Circle Iris Wipe -->
+            <button type="button" data-preset="dual-iris" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">5. Circle Iris Wipe</div>
+              <div class="text-[11px] text-[#475569]">Radial reveal + luminous ring edge</div>
+            </button>
+
+            <!-- 6. Smooth Crossfade -->
+            <button type="button" data-preset="dual-fade" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">6. Smooth Crossfade</div>
+              <div class="text-[11px] text-[#475569]">Velvety alpha dissolve + micro-zoom</div>
+            </button>
+
+            <!-- 7. Liquid Blur Morph -->
+            <button type="button" data-preset="dual-morph" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-[#0f172a]">7. Liquid Blur Morph</span>
+                <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">Pro</span>
+              </div>
+              <div class="text-[11px] text-[#475569]">Cinematic soft-focus zoom morph</div>
+            </button>
+
+            <!-- 8. Slide & Elastic Swap -->
+            <button type="button" data-preset="dual-slide" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">8. Slide &amp; Elastic Swap</div>
+              <div class="text-[11px] text-[#475569]">Horizontal push with spring settle</div>
+            </button>
+
+            <!-- 9. Card Stack Peel -->
+            <button type="button" data-preset="dual-peel" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">9. Card Stack Peel</div>
+              <div class="text-[11px] text-[#475569]">Front card tilts &amp; slides aside</div>
+            </button>
+
+            <!-- 10. Diagonal Brand Wipe -->
+            <button type="button" data-preset="dual-wipe" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">10. Diagonal Brand Wipe</div>
+              <div class="text-[11px] text-[#475569]">Angled sweep with glowing accent bar</div>
+            </button>
+
+            <!-- 11. Heartbeat Pulse Swap -->
+            <button type="button" data-preset="dual-heartbeat" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">11. Heartbeat Pulse Swap</div>
+              <div class="text-[11px] text-[#475569]">Double-pulse zoom morphing on peak</div>
+            </button>
+
+            <!-- 12. Digital Slice Shift -->
+            <button type="button" data-preset="dual-slice" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">12. Digital Slice Shift</div>
+              <div class="text-[11px] text-[#475569]">Modern horizontal slice reveal</div>
+            </button>
+          </div>
+
+          <!-- 8 Single-Image Presets Grid -->
+          <div id="singlePresetGrid" class="hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <button type="button" data-preset="pulse" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">1. Gentle Breathe</div>
+              <div class="text-[11px] text-[#475569]">Organic rhythmic pulse</div>
+            </button>
+
+            <button type="button" data-preset="float" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">2. Smooth Float</div>
+              <div class="text-[11px] text-[#475569]">Weightless vertical hover</div>
+            </button>
+
+            <button type="button" data-preset="shine" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">3. Glossy Light Shine</div>
+              <div class="text-[11px] text-[#475569]">Diagonal specular light glint</div>
+            </button>
+
+            <button type="button" data-preset="single-coin" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">4. 3D Coin Spin</div>
+              <div class="text-[11px] text-[#475569]">Full 360° Y-axis turnaround</div>
+            </button>
+
+            <button type="button" data-preset="single-orbital" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">5. Orbital Ring Tilt</div>
+              <div class="text-[11px] text-[#475569]">Rotating circular halo aura</div>
+            </button>
+
+            <button type="button" data-preset="single-tilt" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">6. 3D Hover Tilt</div>
+              <div class="text-[11px] text-[#475569]">Subtle gyroscope 3D sway</div>
+            </button>
+
+            <button type="button" data-preset="single-spin" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">7. Spin &amp; Settle</div>
+              <div class="text-[11px] text-[#475569]">Eased 360° rotation with pause</div>
+            </button>
+
+            <button type="button" data-preset="single-zoom" class="preset-card text-left p-3 rounded-xl border border-[#e2e8f0] hover:border-indigo-300 bg-white transition cursor-pointer">
+              <div class="text-xs font-bold text-[#0f172a] mb-1">8. Heartbeat Pop</div>
+              <div class="text-[11px] text-[#475569]">Rhythmic avatar spotlight pop</div>
+            </button>
+          </div>
+        </section>
+
+        <!-- 3. High-Fidelity Quality, 60 FPS Timing & < 1 MB Optimizer -->
+        <section class="bg-white rounded-2xl border border-[#e2e8f0] shadow-sm p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-[#0f172a]">3. Anti-Pixelation Quality, 60 FPS &amp; &lt; 1 MB Budget</h3>
+              <p class="text-xs text-[#475569] mt-0.5">Per-frame 256-color Median-Cut palette + Static-Hold compression keeps files crisp &amp; under 1 MB</p>
+            </div>
+
+            <!-- Auto-Optimize Toggle -->
+            <label class="inline-flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl cursor-pointer select-none">
+              <input id="autoOptimizeToggle" type="checkbox" checked class="sr-only peer" />
+              <div class="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative"></div>
+              <span class="text-xs font-semibold text-emerald-700">Auto-Guard &lt; 1 MB</span>
+            </label>
+          </div>
+
+          <!-- Color & Dithering Engine Selector -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-[#0f172a]">Color &amp; Anti-Banding Mode</label>
+              <span class="text-[11px] text-[#4f46e5] font-semibold">256 Adaptive Colors / Frame</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="ditherModeGroup">
+              <button type="button" data-dither="photo" class="dither-btn active p-2.5 rounded-xl border-2 border-[#4f46e5] bg-indigo-50/60 text-left transition cursor-pointer">
+                <div class="text-xs font-bold text-[#0f172a]">Studio Photo</div>
+                <div class="text-[10px] text-[#475569] mt-0.5">Smooth skin tones · Zero banding</div>
+              </button>
+              <button type="button" data-dither="balanced" class="dither-btn p-2.5 rounded-xl border border-[#e2e8f0] bg-white hover:border-indigo-300 text-left transition cursor-pointer">
+                <div class="text-xs font-bold text-[#0f172a]">Balanced Hybrid</div>
+                <div class="text-[10px] text-[#475569] mt-0.5">Edge-aware photo + logo mix</div>
+              </button>
+              <button type="button" data-dither="logo" class="dither-btn p-2.5 rounded-xl border border-[#e2e8f0] bg-white hover:border-indigo-300 text-left transition cursor-pointer">
+                <div class="text-xs font-bold text-[#0f172a]">Sharp Logo</div>
+                <div class="text-[10px] text-[#475569] mt-0.5">Crisp flat vector edges</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Frame Rate (Up to 60 FPS) -->
+          <div class="space-y-2.5 bg-[#f4f6f9]/80 p-3.5 rounded-xl border border-[#e2e8f0]">
+            <div class="flex items-center justify-between">
+              <label for="fpsSlider" class="text-xs font-semibold text-[#0f172a]">Frame Rate (Smoothness up to 60 FPS)</label>
+              <span id="fpsVal" class="text-xs font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-[#4f46e5] border border-indigo-200">30 FPS</span>
+            </div>
+            <input id="fpsSlider" type="range" min="12" max="60" step="1" value="30" class="w-full" />
+            <div class="grid grid-cols-6 gap-1.5 pt-1" id="fpsGroup">
+              <button type="button" data-fps="15" class="fps-btn py-1.5 rounded-lg border border-[#e2e8f0] bg-white text-[11px] font-semibold text-[#475569] hover:border-indigo-300 transition cursor-pointer">15</button>
+              <button type="button" data-fps="24" class="fps-btn py-1.5 rounded-lg border border-[#e2e8f0] bg-white text-[11px] font-semibold text-[#475569] hover:border-indigo-300 transition cursor-pointer">24</button>
+              <button type="button" data-fps="30" class="fps-btn active py-1.5 rounded-lg border-2 border-[#4f46e5] bg-indigo-50 text-[11px] font-bold text-[#4f46e5] transition cursor-pointer">30</button>
+              <button type="button" data-fps="45" class="fps-btn py-1.5 rounded-lg border border-[#e2e8f0] bg-white text-[11px] font-semibold text-[#475569] hover:border-indigo-300 transition cursor-pointer">45</button>
+              <button type="button" data-fps="50" class="fps-btn py-1.5 rounded-lg border border-[#e2e8f0] bg-white text-[11px] font-semibold text-[#475569] hover:border-indigo-300 transition cursor-pointer">50</button>
+              <button type="button" data-fps="60" class="fps-btn py-1.5 rounded-lg border border-[#e2e8f0] bg-white text-[11px] font-semibold text-[#4f46e5] hover:border-indigo-300 transition cursor-pointer">60 FPS</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Full Loop Duration -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label for="durationSlider" class="text-xs font-semibold text-[#0f172a]">Total Loop Duration</label>
+                <span id="durationVal" class="text-xs font-bold text-[#4f46e5]">3.0s</span>
+              </div>
+              <input id="durationSlider" type="range" min="1.4" max="5.0" step="0.2" value="3.0" class="w-full" />
+              <div class="flex justify-between text-[10px] text-[#475569] font-medium">
+                <span>1.4s (Snappy)</span>
+                <span>3.0s</span>
+                <span>5.0s (Relaxed)</span>
+              </div>
+            </div>
+
+            <!-- Hold Duration / Pause Ratio per Image -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label for="holdRatioSlider" class="text-xs font-semibold text-[#0f172a]">Hold Time per Image</label>
+                <span id="holdRatioVal" class="text-xs font-bold text-[#4f46e5]">60% (~0.90s each)</span>
+              </div>
+              <input id="holdRatioSlider" type="range" min="20" max="80" step="5" value="60" class="w-full" />
+              <div class="flex justify-between text-[10px] text-[#475569] font-medium">
+                <span>20% (Continuous)</span>
+                <span>60% (Balanced)</span>
+                <span>80% (Long Pause)</span>
+              </div>
+            </div>
+
+            <!-- Output Resolution -->
+            <div class="space-y-2 sm:col-span-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-semibold text-[#0f172a]">Output Resolution (Square Avatar)</label>
+                <span class="text-[11px] text-[#475569]">Google Profile recommends ≥ 250×250 px</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2" id="resolutionGroup">
+                <button type="button" data-res="240" class="res-btn py-2 px-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-semibold text-[#475569] hover:border-indigo-300 transition cursor-pointer">
+                  240×240
+                </button>
+                <button type="button" data-res="300" class="res-btn active py-2 px-2 rounded-xl border-2 border-[#4f46e5] bg-indigo-50 text-xs font-bold text-[#4f46e5] transition cursor-pointer">
+                  300×300
+                </button>
+                <button type="button" data-res="360" class="res-btn py-2 px-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-semibold text-[#475569] hover:border-indigo-300 transition cursor-pointer">
+                  360×360
+                </button>
+                <button type="button" data-res="400" class="res-btn py-2 px-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-semibold text-[#475569] hover:border-indigo-300 transition cursor-pointer">
+                  400×400 HD
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN: Sticky Live Preview, Google Profile Mockup & Export (5 cols on lg) -->
+      <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+        <!-- Preview Studio Card -->
+        <section class="bg-white rounded-2xl border border-[#e2e8f0] shadow-sm overflow-hidden">
+          <div class="px-5 py-3.5 border-b border-[#e2e8f0] flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <h2 class="text-sm font-semibold text-[#0f172a]">60 FPS Live Studio Preview</h2>
+            </div>
+
+            <!-- Google Circular Mask Guide Toggle -->
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+              <input id="circleOverlayToggle" type="checkbox" checked class="sr-only peer" />
+              <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#4f46e5] relative"></div>
+              <span class="text-xs font-medium text-[#475569]">Circle Safe-Zone</span>
+            </label>
+          </div>
+
+          <!-- Canvas Container -->
+          <div class="p-6 sm:p-7 checkerboard-bg flex flex-col items-center justify-center relative">
+            <div class="relative w-60 h-60 sm:w-64 sm:h-64 rounded-2xl shadow-lg ring-1 ring-slate-200 overflow-hidden bg-white">
+              <canvas id="previewCanvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Live Google Account Mockup Bar -->
+            <div class="mt-5 w-full max-w-xs bg-white/95 backdrop-blur rounded-2xl border border-[#e2e8f0] px-3.5 py-2.5 shadow-sm flex items-center gap-3">
+              <div class="w-11 h-11 rounded-full overflow-hidden ring-2 ring-indigo-500/40 shrink-0 checkerboard-bg">
+                <canvas id="miniProfileCanvas" class="w-full h-full block"></canvas>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <p class="text-xs font-semibold text-[#0f172a] truncate">Google Profile Avatar</p>
+                  <span id="modeIndicatorPill" class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-[#4f46e5] border border-indigo-200">2-Image</span>
+                </div>
+                <p id="estSizeReadout" class="text-[11px] text-emerald-600 font-semibold truncate">Est. ~420 KB · &lt; 1 MB Safe</p>
+              </div>
+              <span id="liveResBadge" class="text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-[#f4f6f9] text-[#0f172a] border border-[#e2e8f0]">
+                300px
+              </span>
+            </div>
+          </div>
+
+          <!-- Playback & Quick Info Bar -->
+          <div class="px-5 py-3 bg-[#f4f6f9]/80 border-t border-[#e2e8f0] flex items-center justify-between text-xs text-[#475569]">
+            <button
+              id="playPauseBtn"
+              type="button"
+              class="inline-flex items-center gap-1.5 font-semibold text-[#0f172a] hover:text-[#4f46e5] transition cursor-pointer"
+            >
+              <svg id="pauseIcon" class="w-4 h-4 text-[#4f46e5]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <svg id="playIcon" class="w-4 h-4 hidden text-[#4f46e5]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+              </svg>
+              <span id="playPauseLabel">Pause Preview</span>
+            </button>
+
+            <span id="estimatedStats" class="font-medium text-[#475569]">30 FPS · 3.0s loop</span>
+          </div>
+        </section>
+
+        <!-- Primary Generate CTA & Output Card -->
+        <section class="bg-white rounded-2xl border border-[#e2e8f0] shadow-sm p-5 space-y-4">
+          <button
+            id="generateBtn"
+            type="button"
+            class="w-full py-3.5 px-5 rounded-xl bg-[#4f46e5] hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span id="generateBtnText">Generate &amp; Download HD GIF</span>
+          </button>
+
+          <!-- Encoding Progress Bar -->
+          <div id="progressContainer" class="hidden space-y-1.5">
+            <div class="flex items-center justify-between text-xs font-medium text-[#475569]">
+              <span id="progressStatus">Quantizing per-frame 256-color palettes...</span>
+              <span id="progressPercent" class="text-[#4f46e5] font-bold">0%</span>
+            </div>
+            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div id="progressBar" class="h-full bg-gradient-to-r from-[#4f46e5] to-emerald-500 rounded-full transition-all duration-150" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Generated GIF Output Result Box -->
+          <div id="resultCard" class="hidden rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-xl checkerboard-bg border border-[#e2e8f0] overflow-hidden shrink-0 shadow-xs">
+                  <img id="renderedGifPreview" alt="Generated GIF Preview" class="w-full h-full object-contain" />
+                </div>
+                <div>
+                  <div id="sizeBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span>&lt; 1 MB Verified</span>
+                  </div>
+                  <p id="fileStatsText" class="text-xs text-[#475569] mt-1.5 font-medium">
+                    Size: 0 KB · 300×300 px
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+              <a
+                id="downloadLink"
+                href="#"
+                download="google-profile-hd.gif"
+                class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold text-center transition shadow-xs"
+              >
+                Download .GIF Again
+              </a>
+              <button
+                id="toggleTipBtn"
+                type="button"
+                class="py-2 px-3 rounded-xl bg-white hover:bg-slate-50 text-[#0f172a] border border-[#e2e8f0] text-xs font-medium transition cursor-pointer"
+              >
+                How to upload?
+              </button>
+            </div>
+
+            <div id="googleUploadTip" class="hidden text-xs text-[#475569] bg-white rounded-xl p-3 border border-[#e2e8f0] leading-relaxed">
+              <strong class="text-[#0f172a]">Upload to Google Account:</strong> Visit <span class="font-medium text-[#4f46e5]">myaccount.google.com</span> &rarr; click your profile photo &rarr; <strong>Add profile picture</strong> &rarr; <strong>From computer</strong> &rarr; select this <code class="bg-slate-100 px-1 rounded text-emerald-700 font-semibold">.gif</code> file.
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    /**
+     * ============================================================================
+     * HIGH-FIDELITY PER-FRAME MEDIAN-CUT GIF89a ENCODER
+     * - Dedicated 256-color Median-Cut Local Color Table per unique frame
+     * - Serpentine Floyd-Steinberg error-diffusion dithering ('photo' | 'balanced' | 'logo')
+     * - Optional GIF89a transparency index support
+     * - Variable frame centisecond delays (supports Smart Static-Hold Compression)
+     * ============================================================================
+     */
+    class HighFidelityGIF89aEncoder {
+      constructor(width, height, options = {}) {
+        this.width = width;
+        this.height = height;
+        this.ditherMode = options.ditherMode || 'photo'; // 'photo' | 'balanced' | 'logo'
+        this.transparent = Boolean(options.transparent);
+        this.frames = []; // Array of { rgba: Uint8ClampedArray, delayCs: number }
+      }
+
+      addFrame(rgbaData, delayCs) {
+        this.frames.push({
+          rgba: new Uint8ClampedArray(rgbaData),
+          delayCs: Math.max(2, Math.round(delayCs)),
+        });
+      }
+
+      /**
+       * Fast Median-Cut 256-color palette builder for a single frame.
+       * Eliminates banding on dark shadows, skin tones, and gradients.
+       */
+      buildMedianCutPalette(rgbaData) {
+        const maxColors = this.transparent ? 255 : 256;
+        const pixelCount = this.width * this.height;
+        const stride = pixelCount > 120000 ? 2 : 1;
+
+        // Deduplicate quantized 6-6-6 RGB bins with weights for fast exact Median-Cut
+        const binMap = new Map();
+        for (let p = 0; p < pixelCount; p += stride) {
+          const i = p << 2;
+          if (this.transparent && rgbaData[i + 3] < 128) continue;
+          const r = rgbaData[i];
+          const g = rgbaData[i + 1];
+          const b = rgbaData[i + 2];
+          const key = ((r >> 2) << 12) | ((g >> 2) << 6) | (b >> 2);
+          let entry = binMap.get(key);
+          if (entry) {
+            entry.count++;
+            entry.rSum += r;
+            entry.gSum += g;
+            entry.bSum += b;
+          } else {
+            binMap.set(key, {
+              r: r,
+              g: g,
+              b: b,
+              rSum: r,
+              gSum: g,
+              bSum: b,
+              count: 1,
+            });
+          }
+        }
+
+        const bins = Array.from(binMap.values());
+        for (let i = 0; i < bins.length; i++) {
+          const item = bins[i];
+          item.r = item.rSum / item.count;
+          item.g = item.gSum / item.count;
+          item.b = item.bSum / item.count;
+        }
+
+        if (bins.length === 0) {
+          const fallback = new Array(256).fill(null).map(() => [0, 0, 0]);
+          return { palette: fallback, activeCount: 1, transparentIndex: this.transparent ? 255 : -1 };
+        }
+
+        // Recursive Median-Cut boxes
+        const makeBox = (items) => {
+          let rMin = 255, rMax = 0, gMin = 255, gMax = 0, bMin = 255, bMax = 0;
+          let totalWeight = 0;
+          for (let i = 0; i < items.length; i++) {
+            const c = items[i];
+            if (c.r < rMin) rMin = c.r;
+            if (c.r > rMax) rMax = c.r;
+            if (c.g < gMin) gMin = c.g;
+            if (c.g > gMax) gMax = c.g;
+            if (c.b < bMin) bMin = c.b;
+            if (c.b > bMax) bMax = c.b;
+            totalWeight += c.count;
+          }
+          const rSpan = (rMax - rMin) * 1.1;
+          const gSpan = (gMax - gMin) * 1.3; // Perceptual green priority
+          const bSpan = (bMax - bMin) * 1.0;
+          const maxSpan = Math.max(rSpan, gSpan, bSpan);
+          const axis = maxSpan === gSpan ? 'g' : maxSpan === rSpan ? 'r' : 'b';
+          return {
+            items,
+            axis,
+            score: maxSpan * Math.log2(totalWeight + 2),
+            totalWeight,
+          };
+        };
+
+        const boxes = [makeBox(bins)];
+        while (boxes.length < maxColors) {
+          // Pick box with highest perceptual variance score that has >= 2 items
+          let bestIdx = -1;
+          let bestScore = 0;
+          for (let i = 0; i < boxes.length; i++) {
+            if (boxes[i].items.length > 1 && boxes[i].score > bestScore) {
+              bestScore = boxes[i].score;
+              bestIdx = i;
+            }
+          }
+          if (bestIdx === -1) break;
+
+          const box = boxes[bestIdx];
+          const axis = box.axis;
+          box.items.sort((a, b) => a[axis] - b[axis]);
+
+          let halfWeight = box.totalWeight * 0.5;
+          let acc = 0;
+          let splitIdx = 1;
+          for (let i = 0; i < box.items.length - 1; i++) {
+            acc += box.items[i].count;
+            if (acc >= halfWeight) {
+              splitIdx = Math.max(1, i + 1);
+              break;
+            }
+          }
+
+          const left = box.items.slice(0, splitIdx);
+          const right = box.items.slice(splitIdx);
+          boxes.splice(bestIdx, 1, makeBox(left), makeBox(right));
+        }
+
+        const palette = [];
+        for (let i = 0; i < boxes.length; i++) {
+          const items = boxes[i].items;
+          let rSum = 0, gSum = 0, bSum = 0, wSum = 0;
+          for (let j = 0; j < items.length; j++) {
+            const it = items[j];
+            rSum += it.rSum;
+            gSum += it.gSum;
+            bSum += it.bSum;
+            wSum += it.count;
+          }
+          palette.push([
+            Math.round(rSum / wSum),
+            Math.round(gSum / wSum),
+            Math.round(bSum / wSum),
+          ]);
+        }
+
+        const activeCount = palette.length;
+        const transparentIndex = this.transparent ? 255 : -1;
+        while (palette.length < 256) {
+          palette.push([0, 0, 0]);
+        }
+        return { palette, activeCount, transparentIndex };
+      }
+
+      /**
+       * Build 15-bit RGB (32,768-entry) perceptual nearest-color lookup table
+       */
+      buildLookupTable(palette, activeCount) {
+        const lut = new Uint8Array(32768);
+        for (let r5 = 0; r5 < 32; r5++) {
+          const r = (r5 << 3) | (r5 >> 2);
+          for (let g5 = 0; g5 < 32; g5++) {
+            const g = (g5 << 3) | (g5 >> 2);
+            for (let b5 = 0; b5 < 32; b5++) {
+              const b = (b5 << 3) | (b5 >> 2);
+              let bestIdx = 0;
+              let bestDist = Infinity;
+              for (let i = 0; i < activeCount; i++) {
+                const pr = palette[i][0];
+                const pg = palette[i][1];
+                const pb = palette[i][2];
+                const dr = r - pr;
+                const dg = g - pg;
+                const db = b - pb;
+                // Redmean-weighted perceptual distance
+                const rMean = (r + pr) >> 1;
+                const dist =
+                  (((512 + rMean) * dr * dr) >> 8) +
+                  4 * dg * dg +
+                  (((767 - rMean) * db * db) >> 8);
+                if (dist < bestDist) {
+                  bestDist = dist;
+                  bestIdx = i;
+                  if (dist === 0) break;
+                }
+              }
+              lut[(r5 << 10) | (g5 << 5) | b5] = bestIdx;
+            }
+          }
+        }
+        return lut;
+      }
+
+      /**
+       * Map RGBA pixels to palette indices using Serpentine Floyd-Steinberg Dithering
+       * or Sharp Nearest-Color matching depending on ditherMode.
+       */
+      mapFrameToIndices(rgbaData, palette, lut, transparentIndex) {
+        const w = this.width;
+        const h = this.height;
+        const indices = new Uint8Array(w * h);
+
+        if (this.ditherMode === 'logo') {
+          for (let p = 0; p < w * h; p++) {
+            const i = p << 2;
+            if (transparentIndex !== -1 && rgbaData[i + 3] < 128) {
+              indices[p] = transparentIndex;
+              continue;
+            }
+            const r = rgbaData[i];
+            const g = rgbaData[i + 1];
+            const b = rgbaData[i + 2];
+            indices[p] = lut[((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3)];
+          }
+          return indices;
+        }
+
+        // Serpentine Floyd-Steinberg Error Diffusion
+        const strength = this.ditherMode === 'balanced' ? 0.55 : 0.88;
+        const errCurr = new Float32Array((w + 2) * 3);
+        const errNext = new Float32Array((w + 2) * 3);
+
+        for (let y = 0; y < h; y++) {
+          errNext.fill(0);
+          const leftToRight = (y & 1) === 0;
+          const xStart = leftToRight ? 0 : w - 1;
+          const xEnd = leftToRight ? w : -1;
+          const xStep = leftToRight ? 1 : -1;
+
+          for (let x = xStart; x !== xEnd; x += xStep) {
+            const p = y * w + x;
+            const i = p << 2;
+
+            if (transparentIndex !== -1 && rgbaData[i + 3] < 128) {
+              indices[p] = transparentIndex;
+              continue;
+            }
+
+            const eIdx = (x + 1) * 3;
+            let r = rgbaData[i] + errCurr[eIdx];
+            let g = rgbaData[i + 1] + errCurr[eIdx + 1];
+            let b = rgbaData[i + 2] + errCurr[eIdx + 2];
+
+            r = r < 0 ? 0 : r > 255 ? 255 : r;
+            g = g < 0 ? 0 : g > 255 ? 255 : g;
+            b = b < 0 ? 0 : b > 255 ? 255 : b;
+
+            const palIdx = lut[(((r + 0.5) >> 3) << 10) | (((g + 0.5) >> 3) << 5) | ((b + 0.5) >> 3)];
+            indices[p] = palIdx;
+
+            const pr = palette[palIdx][0];
+            const pg = palette[palIdx][1];
+            const pb = palette[palIdx][2];
+
+            let er = (r - pr) * strength;
+            let eg = (g - pg) * strength;
+            let eb = (b - pb) * strength;
+
+            // Clamp error spikes so high-contrast edges stay clean
+            if (er > 48) er = 48; else if (er < -48) er = -48;
+            if (eg > 48) eg = 48; else if (eg < -48) eg = -48;
+            if (eb > 48) eb = 48; else if (eb < -48) eb = -48;
+
+            const fwd = (x + 1 + xStep) * 3;
+            const bwd = (x + 1 - xStep) * 3;
+            const mid = (x + 1) * 3;
+
+            errCurr[fwd] += er * 0.4375;     // 7/16
+            errCurr[fwd + 1] += eg * 0.4375;
+            errCurr[fwd + 2] += eb * 0.4375;
+
+            errNext[bwd] += er * 0.1875;     // 3/16
+            errNext[bwd + 1] += eg * 0.1875;
+            errNext[bwd + 2] += eb * 0.1875;
+
+            errNext[mid] += er * 0.3125;     // 5/16
+            errNext[mid + 1] += eg * 0.3125;
+            errNext[mid + 2] += eb * 0.3125;
+
+            errNext[fwd] += er * 0.0625;     // 1/16
+            errNext[fwd + 1] += eg * 0.0625;
+            errNext[fwd + 2] += eb * 0.0625;
+          }
+          errCurr.set(errNext);
+        }
+
+        return indices;
+      }
+
+      lzwEncode(indices, minCodeSize = 8) {
+        const clearCode = 1 << minCodeSize;
+        const eoiCode = clearCode + 1;
+        let nextCode = eoiCode + 1;
+        let codeSize = minCodeSize + 1;
+
+        const outBytes = [];
+        let bitBuffer = 0;
+        let bitCount = 0;
+
+        const writeCode = (code, size) => {
+          bitBuffer |= code << bitCount;
+          bitCount += size;
+          while (bitCount >= 8) {
+            outBytes.push(bitBuffer & 0xff);
+            bitBuffer >>= 8;
+            bitCount -= 8;
+          }
+        };
+
+        const dict = new Int32Array(4096 * 256);
+        dict.fill(-1);
+
+        writeCode(clearCode, codeSize);
+
+        let prefix = indices[0];
+        for (let i = 1; i < indices.length; i++) {
+          const k = indices[i];
+          const dictKey = (prefix << 8) | k;
+          const existing = dict[dictKey];
+
+          if (existing !== -1) {
+            prefix = existing;
+          } else {
+            writeCode(prefix, codeSize);
+
+            if (nextCode < 4096) {
+              dict[dictKey] = nextCode++;
+              if (nextCode > (1 << codeSize) && codeSize < 12) {
+                codeSize++;
+              }
+            } else {
+              writeCode(clearCode, codeSize);
+              dict.fill(-1);
+              nextCode = eoiCode + 1;
+              codeSize = minCodeSize + 1;
+            }
+            prefix = k;
+          }
+        }
+
+        writeCode(prefix, codeSize);
+        writeCode(eoiCode, codeSize);
+
+        if (bitCount > 0) {
+          outBytes.push(bitBuffer & 0xff);
+        }
+
+        const subBlocks = [minCodeSize];
+        for (let offset = 0; offset < outBytes.length; offset += 255) {
+          const chunkLen = Math.min(255, outBytes.length - offset);
+          subBlocks.push(chunkLen);
+          for (let j = 0; j < chunkLen; j++) {
+            subBlocks.push(outBytes[offset + j]);
+          }
+        }
+        subBlocks.push(0x00);
+        return new Uint8Array(subBlocks);
+      }
+
+      async encodeAsync(onProgress) {
+        const chunks = [];
+        const pushBytes = (arr) => chunks.push(new Uint8Array(arr));
+
+        // GIF89a Header
+        pushBytes([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
+        // Logical Screen Descriptor (no Global Color Table; each frame uses its own 256-color Local Table)
+        pushBytes([
+          this.width & 0xff, (this.width >> 8) & 0xff,
+          this.height & 0xff, (this.height >> 8) & 0xff,
+          0x70, 0x00, 0x00
+        ]);
+
+        // NETSCAPE2.0 Infinite Loop Application Extension
+        pushBytes([
+          0x21, 0xff, 0x0b,
+          0x4e, 0x45, 0x54, 0x53, 0x43, 0x41, 0x50, 0x45, 0x32, 0x2e, 0x30,
+          0x03, 0x01, 0x00, 0x00, 0x00
+        ]);
+
+        for (let f = 0; f < this.frames.length; f++) {
+          const frame = this.frames[f];
+          const { palette, activeCount, transparentIndex } = this.buildMedianCutPalette(frame.rgba);
+          const lut = this.buildLookupTable(palette, activeCount);
+
+          // Graphic Control Extension (Disposal Method 2 = Restore to background for clean transparency/transitions)
+          const packedGce = transparentIndex !== -1 ? 0x09 : 0x08;
+          const transByte = transparentIndex !== -1 ? transparentIndex : 0x00;
+          pushBytes([
+            0x21, 0xf9, 0x04, packedGce,
+            frame.delayCs & 0xff, (frame.delayCs >> 8) & 0xff,
+            transByte, 0x00
+          ]);
+
+          // Image Descriptor with Local Color Table Flag (0x87 = 256 colors)
+          pushBytes([
+            0x2c, 0x00, 0x00, 0x00, 0x00,
+            this.width & 0xff, (this.width >> 8) & 0xff,
+            this.height & 0xff, (this.height >> 8) & 0xff,
+            0x87
+          ]);
+
+          // Write 256-color Local Color Table
+          const lct = new Uint8Array(256 * 3);
+          for (let i = 0; i < 256; i++) {
+            lct[i * 3] = palette[i][0];
+            lct[i * 3 + 1] = palette[i][1];
+            lct[i * 3 + 2] = palette[i][2];
+          }
+          chunks.push(lct);
+
+          const indices = this.mapFrameToIndices(frame.rgba, palette, lut, transparentIndex);
+          chunks.push(this.lzwEncode(indices, 8));
+
+          if (onProgress) onProgress((f + 1) / this.frames.length);
+          if (f % 3 === 0) await new Promise((r) => setTimeout(r, 0));
+        }
+
+        // GIF Trailer
+        pushBytes([0x3b]);
+        return new Blob(chunks, { type: 'image/gif' });
+      }
+    }
+
+    /**
+     * ============================================================================
+     * APPLICATION STATE & HIGH-PRECISION COMPOSITING ENGINE
+     * ============================================================================
+     */
+    const state = {
+      slots: [
+        {
+          image: null,
+          mipCanvas: null,
+          thumbUrl: '',
+          name: 'Sample Brand Mark',
+          fit: 'contain',
+          scale: 0.74,
+          offsetX: 0,
+          offsetY: 0,
+        },
+        {
+          image: null,
+          mipCanvas: null,
+          thumbUrl: '',
+          name: 'Sample Crest Badge',
+          fit: 'contain',
+          scale: 0.74,
+          offsetX: 0,
+          offsetY: 0,
+        }
+      ],
+      activeFramingSlot: 0,
+      preset: 'dual-flip',
+      bgMode: 'solid', // 'solid' | 'blur' | 'transparent'
+      bgColor: '#FFFFFF',
+      ditherMode: 'photo', // 'photo' | 'balanced' | 'logo'
+      duration: 3.0,
+      holdRatio: 0.60,
+      resolution: 300,
+      fps: 30,
+      showCircleGuide: true,
+      autoOptimize: true,
+      isPlaying: true,
+      lastGeneratedUrl: null,
+    };
+
+    const previewCanvas = document.getElementById('previewCanvas');
+    const previewCtx = previewCanvas.getContext('2d');
+    const miniProfileCanvas = document.getElementById('miniProfileCanvas');
+    const miniProfileCtx = miniProfileCanvas.getContext('2d');
+
+    const bufA = document.createElement('canvas');
+    const ctxA = bufA.getContext('2d');
+    const bufB = document.createElement('canvas');
+    const ctxB = bufB.getContext('2d');
+    const scratchCanvas = document.createElement('canvas');
+    const scratchCtx = scratchCanvas.getContext('2d');
+
+    /**
+     * Multi-step high-quality bicubic pre-scaler to prevent jagged edges when downscaling large photos/logos
+     */
+    function getHighQualitySource(slot, targetDrawW, targetDrawH) {
+      const img = slot.image;
+      if (!img) return null;
+      const maxTarget = Math.max(targetDrawW, targetDrawH, 128);
+      if (img.width <= maxTarget * 2 && img.height <= maxTarget * 2) {
+        return img;
+      }
+
+      let curW = img.width;
+      let curH = img.height;
+      let src = img;
+
+      while (curW * 0.5 >= maxTarget && curH * 0.5 >= maxTarget) {
+        const nextW = Math.round(curW * 0.5);
+        const nextH = Math.round(curH * 0.5);
+        const stepCanvas = document.createElement('canvas');
+        stepCanvas.width = nextW;
+        stepCanvas.height = nextH;
+        const sCtx = stepCanvas.getContext('2d');
+        sCtx.imageSmoothingEnabled = true;
+        sCtx.imageSmoothingQuality = 'high';
+        sCtx.drawImage(src, 0, 0, nextW, nextH);
+        src = stepCanvas;
+        curW = nextW;
+        curH = nextH;
+      }
+      return src;
+    }
+
+    /**
+     * Create two crisp sample logos for immediate testing
+     */
+    function createSampleImages() {
+      const makeSvgImage = (svgMarkup) =>
+        new Promise((resolve) => {
+          const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.onload = () => resolve({ img, url });
+          img.src = url;
+        });
+
+      const svg1 = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+          <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6366F1" />
+              <stop offset="50%" stop-color="#8B5CF6" />
+              <stop offset="100%" stop-color="#EC4899" />
+            </linearGradient>
+          </defs>
+          <polygon points="256,36 446,146 446,366 256,476 66,366 66,146" fill="url(#g1)" />
+          <polygon points="256,88 398,170 256,252 114,170" fill="#FFFFFF" fill-opacity="0.22" />
+          <path d="M256 128 L352 356 L304 356 L284 306 L228 306 L208 356 L160 356 Z M256 196 L241 266 L271 266 Z" fill="#FFFFFF" />
+        </svg>
+      `;
+
+      const svg2 = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+          <defs>
+            <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0F172A" />
+              <stop offset="100%" stop-color="#1E293B" />
+            </linearGradient>
+            <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F59E0B" />
+              <stop offset="100%" stop-color="#FDE047" />
+            </linearGradient>
+          </defs>
+          <circle cx="256" cy="256" r="218" fill="url(#g2)" stroke="url(#gold)" stroke-width="18" />
+          <circle cx="256" cy="256" r="184" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="3" stroke-dasharray="10 8" />
+          <path d="M168 310 L196 196 L256 254 L316 196 L344 310 Z" fill="url(#gold)" />
+          <rect x="168" y="326" width="176" height="22" rx="11" fill="#FFFFFF" />
+        </svg>
+      `;
+
+      return Promise.all([makeSvgImage(svg1), makeSvgImage(svg2)]);
+    }
+
+    function fillBackdrop(targetCtx, size, refImage = null) {
+      if (state.bgMode === 'transparent') {
+        targetCtx.clearRect(0, 0, size, size);
+        return;
+      }
+      targetCtx.fillStyle = state.bgColor;
+      targetCtx.fillRect(0, 0, size, size);
+
+      if (state.bgMode === 'blur' && refImage) {
+        targetCtx.save();
+        const coverScale = Math.max(size / refImage.width, size / refImage.height) * 1.18;
+        const bw = refImage.width * coverScale;
+        const bh = refImage.height * coverScale;
+        targetCtx.filter = `blur(${Math.max(10, Math.round(size * 0.055))}px) brightness(0.88)`;
+        targetCtx.drawImage(refImage, (size - bw) / 2, (size - bh) / 2, bw, bh);
+        targetCtx.restore();
+      }
+    }
+
+    function renderSlotLayer(targetCtx, size, slot) {
+      targetCtx.save();
+      targetCtx.imageSmoothingEnabled = true;
+      targetCtx.imageSmoothingQuality = 'high';
+      fillBackdrop(targetCtx, size, slot ? slot.image : null);
+
+      if (!slot || !slot.image) {
+        targetCtx.restore();
+        return;
+      }
+
+      const img = slot.image;
+      const aspect = img.width / img.height;
+      let baseW, baseH;
+      if (slot.fit === 'cover') {
+        if (aspect > 1) {
+          baseH = size;
+          baseW = size * aspect;
+        } else {
+          baseW = size;
+          baseH = size / aspect;
+        }
+      } else {
+        if (aspect > 1) {
+          baseW = size;
+          baseH = size / aspect;
+        } else {
+          baseH = size;
+          baseW = size * aspect;
+        }
+      }
+
+      const drawW = baseW * slot.scale;
+      const drawH = baseH * slot.scale;
+      const cx = size / 2 + slot.offsetX * size;
+      const cy = size / 2 + slot.offsetY * size;
+
+      const crispSrc = getHighQualitySource(slot, drawW, drawH);
+      targetCtx.drawImage(crispSrc, cx - drawW / 2, cy - drawH / 2, drawW, drawH);
+      targetCtx.restore();
+    }
+
+    function getDualTimeline(t, holdRatio) {
+      const totalHold = Math.min(0.84, Math.max(0.16, holdRatio));
+      const holdEach = totalHold * 0.5;
+      const transEach = (1 - totalHold) * 0.5;
+
+      const t1End = holdEach;
+      const t2End = t1End + transEach;
+      const t3End = t2End + holdEach;
+
+      const easeInOutCubic = (x) =>
+        x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+
+      if (t < t1End) {
+        return { phase: 'hold1', u: 0, rawU: 0 };
+      } else if (t < t2End) {
+        const raw = (t - t1End) / transEach;
+        return { phase: 'to2', u: easeInOutCubic(raw), rawU: raw };
+      } else if (t < t3End) {
+        return { phase: 'hold2', u: 1, rawU: 1 };
+      } else {
+        const raw = (t - t3End) / transEach;
+        return { phase: 'to1', u: easeInOutCubic(raw), rawU: raw };
+      }
+    }
+
+    function hasBothImages() {
+      return Boolean(state.slots[0].image && state.slots[1].image);
+    }
+
+    function getActiveSingleSlot() {
+      return state.slots[0].image ? state.slots[0] : state.slots[1];
+    }
+
+    /**
+     * Master Frame Renderer supporting all 12 Dual-Image & 8 Single-Image Animations
+     */
+    function renderFrameToContext(ctx, size, t, includeGuide = false) {
+      const s1 = state.slots[0];
+      const s2 = state.slots[1];
+      ctx.save();
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      if (!s1.image && !s2.image) {
+        fillBackdrop(ctx, size, null);
+        ctx.restore();
+        return;
+      }
+
+      if (bufA.width !== size || bufA.height !== size) {
+        bufA.width = size;
+        bufA.height = size;
+        bufB.width = size;
+        bufB.height = size;
+      }
+
+      const bothLoaded = hasBothImages();
+      const effectivePreset =
+        bothLoaded && state.preset.startsWith('dual-')
+          ? state.preset
+          : !bothLoaded && state.preset.startsWith('dual-')
+          ? 'pulse'
+          : state.preset;
+
+      if (effectivePreset.startsWith('dual-') && bothLoaded) {
+        renderSlotLayer(ctxA, size, s1);
+        renderSlotLayer(ctxB, size, s2);
+
+        const { phase, u, rawU } = getDualTimeline(t, state.holdRatio);
+
+        if (phase === 'hold1') {
+          if (state.bgMode === 'transparent') ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(bufA, 0, 0);
+        } else if (phase === 'hold2') {
+          if (state.bgMode === 'transparent') ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(bufB, 0, 0);
+        } else {
+          const fromBuf = phase === 'to2' ? bufA : bufB;
+          const toBuf = phase === 'to2' ? bufB : bufA;
+          const fromImg = phase === 'to2' ? s1.image : s2.image;
+
+          fillBackdrop(ctx, size, fromImg);
+
+          switch (effectivePreset) {
+            case 'dual-flip': {
+              // 1. Horizontal 3D Coin Flip + specular highlight
+              const angle = u * Math.PI;
+              const scaleX = Math.max(0.025, Math.abs(Math.cos(angle)));
+              const lift = 1 + 0.06 * Math.sin(angle);
+              const activeBuf = u < 0.5 ? fromBuf : toBuf;
+
+              ctx.save();
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(scaleX * lift, lift);
+              ctx.drawImage(activeBuf, -size / 2, -size / 2, size, size);
+
+              const shade = 0.28 * Math.sin(angle);
+              ctx.fillStyle = `rgba(9, 13, 22, ${shade})`;
+              ctx.fillRect(-size / 2, -size / 2, size, size);
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-vflip': {
+              // 2. Vertical 3D X-Axis Flip
+              const angle = u * Math.PI;
+              const scaleY = Math.max(0.025, Math.abs(Math.cos(angle)));
+              const lift = 1 + 0.06 * Math.sin(angle);
+              const activeBuf = u < 0.5 ? fromBuf : toBuf;
+
+              ctx.save();
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(lift, scaleY * lift);
+              ctx.drawImage(activeBuf, -size / 2, -size / 2, size, size);
+
+              const shade = 0.28 * Math.sin(angle);
+              ctx.fillStyle = `rgba(9, 13, 22, ${shade})`;
+              ctx.fillRect(-size / 2, -size / 2, size, size);
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-cube': {
+              // 3. 3D Cube Rotate (90-degree perspective face turn)
+              const splitX = size * (1 - u);
+              const wLeft = Math.max(0.5, splitX);
+              const wRight = Math.max(0.5, size - splitX);
+
+              if (wLeft > 1) {
+                ctx.save();
+                ctx.drawImage(fromBuf, 0, 0, size, size, 0, 0, wLeft, size);
+                ctx.fillStyle = `rgba(9, 13, 22, ${0.42 * u})`;
+                ctx.fillRect(0, 0, wLeft, size);
+                ctx.restore();
+              }
+              if (wRight > 1) {
+                ctx.save();
+                ctx.drawImage(toBuf, 0, 0, size, size, splitX, 0, wRight, size);
+                ctx.fillStyle = `rgba(9, 13, 22, ${0.42 * (1 - u)})`;
+                ctx.fillRect(splitX, 0, wRight, size);
+                ctx.restore();
+              }
+              break;
+            }
+
+            case 'dual-orbital': {
+              // 4. Orbital Spin Switch (smooth 180° swirl + zoom morph)
+              const spinAngle = u * Math.PI;
+              const dipScale = 1 - 0.18 * Math.sin(u * Math.PI);
+
+              ctx.save();
+              ctx.globalAlpha = 1 - u;
+              ctx.translate(size / 2, size / 2);
+              ctx.rotate(spinAngle);
+              ctx.scale(dipScale, dipScale);
+              ctx.drawImage(fromBuf, -size / 2, -size / 2);
+              ctx.restore();
+
+              ctx.save();
+              ctx.globalAlpha = u;
+              ctx.translate(size / 2, size / 2);
+              ctx.rotate(spinAngle - Math.PI);
+              ctx.scale(dipScale, dipScale);
+              ctx.drawImage(toBuf, -size / 2, -size / 2);
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-iris': {
+              // 5. Circle Iris Wipe with subtle luminous ring border
+              ctx.drawImage(fromBuf, 0, 0);
+              const maxRadius = Math.hypot(size / 2, size / 2);
+              const radius = u * maxRadius;
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
+              ctx.clip();
+              ctx.drawImage(toBuf, 0, 0);
+              ctx.restore();
+
+              if (u > 0.02 && u < 0.98) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(129, 140, 248, ${0.65 * Math.sin(u * Math.PI)})`;
+                ctx.lineWidth = Math.max(2, size * 0.012);
+                ctx.stroke();
+                ctx.restore();
+              }
+              break;
+            }
+
+            case 'dual-fade': {
+              // 6. Smooth Crossfade
+              const zoomOut = 1 + 0.04 * u;
+              const zoomIn = 0.96 + 0.04 * u;
+
+              ctx.save();
+              ctx.globalAlpha = 1 - u;
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(zoomOut, zoomOut);
+              ctx.drawImage(fromBuf, -size / 2, -size / 2);
+              ctx.restore();
+
+              ctx.save();
+              ctx.globalAlpha = u;
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(zoomIn, zoomIn);
+              ctx.drawImage(toBuf, -size / 2, -size / 2);
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-morph': {
+              // 7. Liquid Blur Morph
+              const blurPx = Math.round(size * 0.045 * Math.sin(u * Math.PI));
+              const scaleOut = 1 + 0.1 * u;
+              const scaleIn = 1.1 - 0.1 * u;
+
+              ctx.save();
+              ctx.globalAlpha = 1 - u;
+              if (blurPx > 0) ctx.filter = `blur(${blurPx}px)`;
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(scaleOut, scaleOut);
+              ctx.drawImage(fromBuf, -size / 2, -size / 2);
+              ctx.restore();
+
+              ctx.save();
+              ctx.globalAlpha = u;
+              if (blurPx > 0) ctx.filter = `blur(${blurPx}px)`;
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(scaleIn, scaleIn);
+              ctx.drawImage(toBuf, -size / 2, -size / 2);
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-slide': {
+              // 8. Slide & Elastic Swap
+              const c1 = 1.70158;
+              const c3 = c1 + 1;
+              const elasticU =
+                1 + c3 * Math.pow(rawU - 1, 3) + c1 * Math.pow(rawU - 1, 2);
+              const dir = phase === 'to2' ? -1 : 1;
+              const offset = dir * elasticU * size;
+
+              ctx.drawImage(fromBuf, offset, 0);
+              ctx.drawImage(toBuf, offset - dir * size, 0);
+              break;
+            }
+
+            case 'dual-peel': {
+              // 9. Card Stack Peel
+              const backScale = 0.92 + 0.08 * u;
+              ctx.save();
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(backScale, backScale);
+              ctx.drawImage(toBuf, -size / 2, -size / 2);
+              ctx.restore();
+
+              const dir = phase === 'to2' ? -1 : 1;
+              ctx.save();
+              ctx.globalAlpha = Math.max(0, 1 - u * 1.15);
+              ctx.translate(size / 2 + dir * u * size * 0.95, size / 2 + u * size * 0.12);
+              ctx.rotate(dir * u * 0.28);
+              ctx.drawImage(fromBuf, -size / 2, -size / 2);
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-wipe': {
+              // 10. Diagonal Brand Wipe with luminous accent edge
+              ctx.drawImage(fromBuf, 0, 0);
+              const slant = size * 0.35;
+              const progressX = -slant + u * (size + slant * 2);
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.moveTo(-slant, 0);
+              ctx.lineTo(progressX, 0);
+              ctx.lineTo(progressX - slant, size);
+              ctx.lineTo(-slant, size);
+              ctx.closePath();
+              ctx.clip();
+              ctx.drawImage(toBuf, 0, 0);
+              ctx.restore();
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.moveTo(progressX, 0);
+              ctx.lineTo(progressX - slant, size);
+              ctx.strokeStyle = `rgba(129, 140, 248, ${0.85 * Math.sin(u * Math.PI)})`;
+              ctx.lineWidth = Math.max(3, size * 0.015);
+              ctx.stroke();
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-heartbeat': {
+              // 11. Heartbeat Pulse Swap
+              const activeBuf = u < 0.5 ? fromBuf : toBuf;
+              const beat =
+                1 +
+                0.11 * Math.exp(-Math.pow((u - 0.35) / 0.12, 2)) +
+                0.14 * Math.exp(-Math.pow((u - 0.55) / 0.13, 2));
+              ctx.save();
+              ctx.translate(size / 2, size / 2);
+              ctx.scale(beat, beat);
+              ctx.drawImage(activeBuf, -size / 2, -size / 2);
+              ctx.restore();
+              break;
+            }
+
+            case 'dual-slice': {
+              // 12. Digital Slice Shift
+              const slices = 8;
+              const sliceH = size / slices;
+              for (let s = 0; s < slices; s++) {
+                const sy = s * sliceH;
+                const dir = s % 2 === 0 ? 1 : -1;
+                const stagger = Math.max(0, Math.min(1, (u * 1.35) - (s / slices) * 0.35));
+                const shiftX = dir * Math.sin(stagger * Math.PI) * size * 0.16;
+                const showNew = stagger >= 0.5;
+                ctx.drawImage(
+                  showNew ? toBuf : fromBuf,
+                  0, sy, size, sliceH,
+                  shiftX, sy, size, sliceH
+                );
+              }
+              break;
+            }
+          }
+        }
+      } else {
+        // 8 Single-Image Animations
+        const singleSlot = getActiveSingleSlot();
+        renderSlotLayer(ctxA, size, singleSlot);
+        const twoPiT = Math.PI * 2 * t;
+
+        fillBackdrop(ctx, size, singleSlot.image);
+
+        switch (effectivePreset) {
+          case 'float': {
+            const offsetY = -size * 0.04 * Math.sin(twoPiT);
+            ctx.drawImage(bufA, 0, offsetY);
+            break;
+          }
+          case 'shine': {
+            ctx.drawImage(bufA, 0, 0);
+            if (scratchCanvas.width !== size || scratchCanvas.height !== size) {
+              scratchCanvas.width = size;
+              scratchCanvas.height = size;
+            }
+            scratchCtx.clearRect(0, 0, size, size);
+            const img = singleSlot.image;
+            const aspect = img.width / img.height;
+            const baseW = aspect > 1 ? size : size * aspect;
+            const baseH = aspect > 1 ? size / aspect : size;
+            const dw = baseW * singleSlot.scale;
+            const dh = baseH * singleSlot.scale;
+            const cx = size / 2 + singleSlot.offsetX * size;
+            const cy = size / 2 + singleSlot.offsetY * size;
+
+            scratchCtx.save();
+            scratchCtx.drawImage(img, cx - dw / 2, cy - dh / 2, dw, dh);
+            scratchCtx.globalCompositeOperation = 'source-atop';
+            const sweepPhase = Math.min(1, t / 0.78);
+            const eased = sweepPhase * sweepPhase * (3 - 2 * sweepPhase);
+            const travel = size * 1.65;
+            const off = -travel / 2 + eased * travel;
+            scratchCtx.translate(size / 2, size / 2);
+            scratchCtx.rotate(-Math.PI / 5);
+            const grad = scratchCtx.createLinearGradient(off - size * 0.25, 0, off + size * 0.25, 0);
+            grad.addColorStop(0, 'rgba(255,255,255,0)');
+            grad.addColorStop(0.5, 'rgba(255,255,255,0.68)');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            scratchCtx.fillStyle = grad;
+            scratchCtx.fillRect(-size, -size, size * 2, size * 2);
+            scratchCtx.restore();
+            ctx.drawImage(scratchCanvas, 0, 0);
+            break;
+          }
+          case 'single-coin': {
+            const scaleX = Math.max(0.03, Math.abs(Math.cos(twoPiT)));
+            ctx.translate(size / 2, size / 2);
+            ctx.scale(scaleX, 1);
+            ctx.drawImage(bufA, -size / 2, -size / 2);
+            break;
+          }
+          case 'single-orbital': {
+            ctx.drawImage(bufA, 0, 0);
+            ctx.save();
+            ctx.translate(size / 2, size / 2);
+            ctx.rotate(twoPiT);
+            ctx.beginPath();
+            ctx.arc(0, 0, size * 0.44, 0, Math.PI * 1.15);
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.85)';
+            ctx.lineWidth = Math.max(3, size * 0.018);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            ctx.restore();
+            break;
+          }
+          case 'single-tilt': {
+            const tiltAngle = 0.07 * Math.sin(twoPiT);
+            const tiltScaleX = 1 - 0.04 * Math.abs(Math.cos(twoPiT));
+            ctx.translate(size / 2, size / 2);
+            ctx.rotate(tiltAngle);
+            ctx.scale(tiltScaleX, 1);
+            ctx.drawImage(bufA, -size / 2, -size / 2);
+            break;
+          }
+          case 'single-spin': {
+            const spinT = Math.min(1, t / 0.55);
+            const easedSpin = spinT < 0.5 ? 4 * spinT * spinT * spinT : 1 - Math.pow(-2 * spinT + 2, 3) / 2;
+            ctx.translate(size / 2, size / 2);
+            ctx.rotate(easedSpin * Math.PI * 2);
+            ctx.drawImage(bufA, -size / 2, -size / 2);
+            break;
+          }
+          case 'single-zoom': {
+            const scale = 1 + 0.08 * Math.sin(Math.PI * t);
+            ctx.translate(size / 2, size / 2);
+            ctx.scale(scale, scale);
+            ctx.drawImage(bufA, -size / 2, -size / 2);
+            break;
+          }
+          default: {
+            // Gentle Breathe
+            const scale = 1 + 0.06 * Math.sin(twoPiT);
+            ctx.translate(size / 2, size / 2);
+            ctx.scale(scale, scale);
+            ctx.drawImage(bufA, -size / 2, -size / 2);
+            break;
+          }
+        }
+      }
+
+      ctx.restore();
+
+      // Optional Google Account Circular Crop Safe-Zone Guide (Preview only)
+      if (includeGuide && state.showCircleGuide) {
+        ctx.save();
+        const radius = size * 0.46;
+        ctx.beginPath();
+        ctx.rect(0, 0, size, size);
+        ctx.arc(size / 2, size / 2, radius, 0, Math.PI * 2, true);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.34)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(79, 70, 229, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 5]);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    /**
+     * Silky 60 FPS Live Canvas Loop
+     */
+    let startTime = performance.now();
+    function animationLoop(now) {
+      if (state.isPlaying && (state.slots[0].image || state.slots[1].image)) {
+        const elapsedSec = (now - startTime) / 1000;
+        const t = (elapsedSec % state.duration) / state.duration;
+
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const displaySize = 256;
+        if (previewCanvas.width !== displaySize * dpr) {
+          previewCanvas.width = displaySize * dpr;
+          previewCanvas.height = displaySize * dpr;
+        }
+        renderFrameToContext(previewCtx, previewCanvas.width, t, true);
+
+        const miniSize = 88;
+        if (miniProfileCanvas.width !== miniSize) {
+          miniProfileCanvas.width = miniSize;
+          miniProfileCanvas.height = miniSize;
+        }
+        renderFrameToContext(miniProfileCtx, miniSize, t, false);
+      }
+      requestAnimationFrame(animationLoop);
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+      const banner = document.getElementById('toastBanner');
+      const icon = document.getElementById('toastIcon');
+      const msg = document.getElementById('toastMessage');
+      msg.textContent = message;
+      icon.className = `w-2.5 h-2.5 rounded-full shrink-0 ${isError ? 'bg-rose-500' : 'bg-emerald-500'}`;
+      banner.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => banner.classList.add('hidden'), 3600);
+    }
+
+    /**
+     * Real-time file size estimator taking Smart Static-Hold Compression into account
+     */
+    function estimateGifSizeKB() {
+      const both = hasBothImages() && state.preset.startsWith('dual-');
+      const activeDuration = both ? state.duration * (1 - state.holdRatio) : state.duration;
+      const motionFrames = Math.max(8, Math.round(activeDuration * state.fps));
+      const totalUniqueFrames = both ? motionFrames + 2 : motionFrames;
+      const pixelsPerFrame = state.resolution * state.resolution;
+      const bytesPerPixel = state.ditherMode === 'logo' ? 0.14 : state.ditherMode === 'balanced' ? 0.22 : 0.28;
+      const estBytes = totalUniqueFrames * pixelsPerFrame * bytesPerPixel;
+      return Math.round(estBytes / 1024);
+    }
+
+    function updateEstimatedStats() {
+      document.getElementById('estimatedStats').textContent =
+        `${state.fps} FPS · ${state.duration.toFixed(1)}s loop`;
+      document.getElementById('liveResBadge').textContent = `${state.resolution}px`;
+      document.getElementById('fpsVal').textContent = `${state.fps} FPS`;
+
+      const holdSecEach = (state.duration * state.holdRatio * 0.5).toFixed(2);
+      document.getElementById('holdRatioVal').textContent =
+        `${Math.round(state.holdRatio * 100)}% (~${holdSecEach}s each)`;
+
+      const both = hasBothImages();
+      document.getElementById('modeIndicatorPill').textContent = both ? '2-Image' : '1-Image';
+
+      const estKB = estimateGifSizeKB();
+      const estEl = document.getElementById('estSizeReadout');
+      if (estKB < 920) {
+        estEl.className = 'text-[11px] text-emerald-600 font-semibold truncate';
+        estEl.textContent = `Est. ~${estKB} KB · < 1 MB Safe`;
+      } else {
+        estEl.className = 'text-[11px] text-amber-600 font-semibold truncate';
+        estEl.textContent = `Est. ~${estKB} KB (Auto-Guard Active)`;
+      }
+    }
+
+    function syncSlotCardsUI() {
+      [0, 1].forEach((idx) => {
+        const num = idx + 1;
+        const slot = state.slots[idx];
+        const thumb = document.getElementById(`thumb${num}`);
+        const emptyPrompt = document.getElementById(`emptyPrompt${num}`);
+        const nameEl = document.getElementById(`name${num}`);
+        const removeBtn = document.getElementById(`removeBtn${num}`);
+
+        if (slot.image) {
+          thumb.src = slot.thumbUrl;
+          thumb.classList.remove('hidden');
+          emptyPrompt.classList.add('hidden');
+          nameEl.textContent = slot.name;
+          removeBtn.classList.remove('hidden');
+        } else {
+          thumb.classList.add('hidden');
+          emptyPrompt.classList.remove('hidden');
+          nameEl.textContent = 'Empty slot';
+          removeBtn.classList.add('hidden');
+        }
+      });
+
+      const both = hasBothImages();
+      setPresetFilterTab(both ? 'dual' : 'single');
+      updateEstimatedStats();
+    }
+
+    function setPresetFilterTab(tab) {
+      const dualGrid = document.getElementById('dualPresetGrid');
+      const singleGrid = document.getElementById('singlePresetGrid');
+      const dualBtn = document.getElementById('filterDualBtn');
+      const singleBtn = document.getElementById('filterSingleBtn');
+
+      const showDual = tab === 'dual';
+      dualGrid.classList.toggle('hidden', !showDual);
+      dualGrid.classList.toggle('grid', showDual);
+      singleGrid.classList.toggle('hidden', showDual);
+      singleGrid.classList.toggle('grid', !showDual);
+
+      dualBtn.className = showDual
+        ? 'px-2.5 py-1 rounded-lg bg-[#4f46e5] text-white shadow-xs transition cursor-pointer'
+        : 'px-2.5 py-1 rounded-lg text-[#475569] hover:text-[#0f172a] transition cursor-pointer';
+      singleBtn.className = !showDual
+        ? 'px-2.5 py-1 rounded-lg bg-[#4f46e5] text-white shadow-xs transition cursor-pointer'
+        : 'px-2.5 py-1 rounded-lg text-[#475569] hover:text-[#0f172a] transition cursor-pointer';
+
+      if (showDual && !state.preset.startsWith('dual-')) {
+        selectPreset('dual-flip');
+      } else if (!showDual && state.preset.startsWith('dual-')) {
+        selectPreset('pulse');
+      }
+    }
+
+    function selectPreset(presetName) {
+      state.preset = presetName;
+      document.querySelectorAll('.preset-card').forEach((c) => {
+        const active = c.dataset.preset === presetName;
+        c.classList.toggle('border-2', active);
+        c.classList.toggle('border-[#4f46e5]', active);
+        c.classList.toggle('bg-indigo-50/60', active);
+        c.classList.toggle('border', !active);
+        c.classList.toggle('border-[#e2e8f0]', !active);
+        c.classList.toggle('bg-white', !active);
+      });
+      updateEstimatedStats();
+    }
+
+    function selectFramingSlot(slotIndex) {
+      state.activeFramingSlot = slotIndex;
+      const slot = state.slots[slotIndex];
+
+      const tab1 = document.getElementById('framingTab1');
+      const tab2 = document.getElementById('framingTab2');
+      tab1.className =
+        slotIndex === 0
+          ? 'px-3 py-1 rounded-lg bg-[#4f46e5] text-white text-xs font-semibold transition cursor-pointer shadow-xs'
+          : 'px-3 py-1 rounded-lg bg-white text-[#475569] border border-[#e2e8f0] text-xs font-semibold transition cursor-pointer';
+      tab2.className =
+        slotIndex === 1
+          ? 'px-3 py-1 rounded-lg bg-violet-600 text-white text-xs font-semibold transition cursor-pointer shadow-xs'
+          : 'px-3 py-1 rounded-lg bg-white text-[#475569] border border-[#e2e8f0] text-xs font-semibold transition cursor-pointer';
+
+      const card1 = document.getElementById('slotCard1');
+      const card2 = document.getElementById('slotCard2');
+      card1.className =
+        slotIndex === 0
+          ? 'rounded-2xl border-2 border-[#4f46e5] bg-indigo-50/40 p-3.5 transition space-y-3'
+          : 'rounded-2xl border border-[#e2e8f0] bg-slate-50/70 p-3.5 transition space-y-3';
+      card2.className =
+        slotIndex === 1
+          ? 'rounded-2xl border-2 border-violet-600 bg-violet-50/40 p-3.5 transition space-y-3'
+          : 'rounded-2xl border border-[#e2e8f0] bg-slate-50/70 p-3.5 transition space-y-3';
+
+      document.getElementById('logoScaleSlider').value = Math.round(slot.scale * 100);
+      document.getElementById('logoScaleVal').textContent = `${Math.round(slot.scale * 100)}%`;
+      document.getElementById('offsetXSlider').value = Math.round(slot.offsetX * 100);
+      document.getElementById('offsetXVal').textContent = `${Math.round(slot.offsetX * 100)}%`;
+      document.getElementById('offsetYSlider').value = Math.round(slot.offsetY * 100);
+      document.getElementById('offsetYVal').textContent = `${Math.round(slot.offsetY * 100)}%`;
+
+      const containBtn = document.getElementById('fitContainBtn');
+      const coverBtn = document.getElementById('fitCoverBtn');
+      const isCover = slot.fit === 'cover';
+      containBtn.className = !isCover
+        ? 'px-2.5 py-1 rounded-lg bg-indigo-50 text-[#4f46e5] border border-indigo-200 text-[11px] font-bold transition cursor-pointer'
+        : 'px-2.5 py-1 rounded-lg bg-white text-[#475569] border border-[#e2e8f0] text-[11px] font-semibold transition cursor-pointer';
+      coverBtn.className = isCover
+        ? 'px-2.5 py-1 rounded-lg bg-indigo-50 text-[#4f46e5] border border-indigo-200 text-[11px] font-bold transition cursor-pointer'
+        : 'px-2.5 py-1 rounded-lg bg-white text-[#475569] border border-[#e2e8f0] text-[11px] font-semibold transition cursor-pointer';
+    }
+
+    function loadFileIntoSlot(file, slotIndex, silent = false) {
+      if (!file || !file.type.startsWith('image/')) {
+        if (!silent) showToast('Please select a valid image file (PNG, SVG, JPG, or WebP).', true);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        const img = new Image();
+        img.onload = () => {
+          const slot = state.slots[slotIndex];
+          slot.image = img;
+          slot.thumbUrl = dataUrl;
+          slot.name = file.name.length > 24 ? file.name.slice(0, 21) + '...' : file.name;
+
+          const isLikelyPhoto = file.type === 'image/jpeg';
+          slot.fit = isLikelyPhoto ? 'cover' : 'contain';
+          slot.scale = isLikelyPhoto ? 1.0 : 0.74;
+          slot.offsetX = 0;
+          slot.offsetY = 0;
+
+          syncSlotCardsUI();
+          selectFramingSlot(slotIndex);
+          if (!silent) {
+            showToast(`Loaded "${slot.name}" into Image ${slotIndex + 1}`);
+          }
+        };
+        img.onerror = () => showToast('Could not decode that image file.', true);
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /**
+     * Build optimized timeline frames using Smart Static-Hold Frame Compression.
+     * Stationary Hold phases become single full-resolution frames with exact centisecond delays,
+     * saving ~60% of the <1 MB budget for high-res, 256-color transition frames.
+     */
+    function buildCompressedFrameSchedule(fps) {
+      const both = hasBothImages() && state.preset.startsWith('dual-');
+      const totalCentiseconds = Math.round(state.duration * 100);
+
+      if (!both) {
+        const count = Math.max(12, Math.round(state.duration * fps));
+        const schedule = [];
+        let accCs = 0;
+        for (let f = 0; f < count; f++) {
+          const nextAcc = Math.round(((f + 1) * totalCentiseconds) / count);
+          const delayCs = Math.max(2, nextAcc - accCs);
+          accCs += delayCs;
+          schedule.push({ t: f / count, delayCs });
+        }
+        return schedule;
+      }
+
+      const totalHold = Math.min(0.84, Math.max(0.16, state.holdRatio));
+      const holdEach = totalHold * 0.5;
+      const transEach = (1 - totalHold) * 0.5;
+
+      const holdCs = Math.max(10, Math.round(totalCentiseconds * holdEach));
+      const transDurationSec = state.duration * transEach;
+      const transTotalCs = Math.max(10, Math.round(totalCentiseconds * transEach));
+      const transSteps = Math.max(6, Math.round(transDurationSec * fps));
+
+      const schedule = [];
+
+      // 1. Hold on Image 1 (single lossless static frame!)
+      schedule.push({ t: holdEach * 0.5, delayCs: holdCs });
+
+      // 2. Smooth Transition Image 1 -> Image 2
+      let acc1 = 0;
+      for (let i = 0; i < transSteps; i++) {
+        const nextAcc = Math.round(((i + 1) * transTotalCs) / transSteps);
+        const delayCs = Math.max(2, nextAcc - acc1);
+        acc1 += delayCs;
+        const frac = (i + 0.5) / transSteps;
+        schedule.push({ t: holdEach + frac * transEach, delayCs });
+      }
+
+      // 3. Hold on Image 2 (single lossless static frame!)
+      schedule.push({ t: holdEach + transEach + holdEach * 0.5, delayCs: holdCs });
+
+      // 4. Smooth Transition Image 2 -> Image 1
+      let acc2 = 0;
+      for (let i = 0; i < transSteps; i++) {
+        const nextAcc = Math.round(((i + 1) * transTotalCs) / transSteps);
+        const delayCs = Math.max(2, nextAcc - acc2);
+        acc2 += delayCs;
+        const frac = (i + 0.5) / transSteps;
+        schedule.push({ t: holdEach * 2 + transEach + frac * transEach, delayCs });
+      }
+
+      return schedule;
+    }
+
+    /**
+     * Generate & Export HD GIF89a strictly under 1 MB (980 KB ceiling)
+     */
+    async function generateAndDownloadGif() {
+      if (!state.slots[0].image && !state.slots[1].image) {
+        showToast('Please upload at least one image first.', true);
+        return;
+      }
+
+      const generateBtn = document.getElementById('generateBtn');
+      const topExportBtn = document.getElementById('topExportBtn');
+      const generateBtnText = document.getElementById('generateBtnText');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      const progressStatus = document.getElementById('progressStatus');
+
+      generateBtn.disabled = true;
+      topExportBtn.disabled = true;
+      generateBtnText.textContent = 'Encoding HD GIF...';
+      progressContainer.classList.remove('hidden');
+
+      const MAX_BYTES = 980 * 1024; // Strictly under 1 MB (1,024 KB)
+
+      const passes = [
+        { res: state.resolution, fps: state.fps, dither: state.ditherMode, label: `Encoding ${state.resolution}px @ ${state.fps} FPS (256 colors/frame)...` }
+      ];
+
+      if (state.autoOptimize) {
+        passes.push(
+          { res: state.resolution, fps: Math.min(36, state.fps), dither: state.ditherMode, label: 'Tuning frame cadence for < 1 MB...' },
+          { res: Math.min(300, state.resolution), fps: Math.min(28, state.fps), dither: state.ditherMode, label: 'Optimizing dimensions to guarantee < 1 MB...' },
+          { res: 240, fps: 20, dither: 'balanced', label: 'Final high-clarity pass under 1 MB...' }
+        );
+      }
+
+      let finalBlob = null;
+      let usedPass = passes[0];
+      let finalFrameCount = 0;
+
+      try {
+        for (let p = 0; p < passes.length; p++) {
+          const pass = passes[p];
+          usedPass = pass;
+          progressStatus.textContent = pass.label;
+          progressBar.style.width = '5%';
+          progressPercent.textContent = '5%';
+
+          const schedule = buildCompressedFrameSchedule(pass.fps);
+          finalFrameCount = schedule.length;
+
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = pass.res;
+          offCanvas.height = pass.res;
+          const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+
+          const encoder = new HighFidelityGIF89aEncoder(pass.res, pass.res, {
+            ditherMode: pass.dither,
+            transparent: state.bgMode === 'transparent',
+          });
+
+          for (let f = 0; f < schedule.length; f++) {
+            const item = schedule[f];
+            renderFrameToContext(offCtx, pass.res, item.t, false);
+            const imgData = offCtx.getImageData(0, 0, pass.res, pass.res);
+            encoder.addFrame(imgData.data, item.delayCs);
+          }
+
+          const blob = await encoder.encodeAsync((ratio) => {
+            const pct = Math.round(10 + ratio * 90);
+            progressBar.style.width = `${pct}%`;
+            progressPercent.textContent = `${pct}%`;
+          });
+
+          finalBlob = blob;
+          if (!state.autoOptimize || blob.size <= MAX_BYTES) {
+            break;
+          }
+        }
+
+        if (state.lastGeneratedUrl) {
+          URL.revokeObjectURL(state.lastGeneratedUrl);
+        }
+
+        const gifUrl = URL.createObjectURL(finalBlob);
+        state.lastGeneratedUrl = gifUrl;
+
+        const sizeKB = (finalBlob.size / 1024).toFixed(1);
+        const isUnder1MB = finalBlob.size < 1024 * 1024;
+
+        const resultCard = document.getElementById('resultCard');
+        const renderedGifPreview = document.getElementById('renderedGifPreview');
+        const fileStatsText = document.getElementById('fileStatsText');
+        const downloadLink = document.getElementById('downloadLink');
+        const sizeBadge = document.getElementById('sizeBadge');
+
+        renderedGifPreview.src = gifUrl;
+        downloadLink.href = gifUrl;
+        downloadLink.download = 'google-profile-hd.gif';
+        fileStatsText.textContent = `Size: ${sizeKB} KB · ${usedPass.res}×${usedPass.res} px · ${usedPass.fps} FPS (${finalFrameCount} key frames)`;
+
+        if (isUnder1MB) {
+          sizeBadge.className =
+            'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300';
+          sizeBadge.innerHTML = `
+            <svg class="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>${sizeKB} KB • Ready for Google Profile</span>
+          `;
+        } else {
+          sizeBadge.className =
+            'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300';
+          sizeBadge.textContent = `${sizeKB} KB (Enable Auto-Guard for < 1 MB)`;
+        }
+
+        resultCard.classList.remove('hidden');
+        downloadLink.click();
+        showToast(`HD GIF ready (${sizeKB} KB) — downloading automatically!`);
+      } catch (err) {
+        console.error(err);
+        showToast('Something went wrong while encoding the GIF.', true);
+      } finally {
+        generateBtn.disabled = false;
+        topExportBtn.disabled = false;
+        generateBtnText.textContent = 'Generate & Download HD GIF';
+        setTimeout(() => progressContainer.classList.add('hidden'), 600);
+      }
+    }
+
+    /**
+     * ============================================================================
+     * EVENT LISTENERS & INITIALIZATION
+     * ============================================================================
+     */
+    window.addEventListener('DOMContentLoaded', async () => {
+      const loadDefaultPair = async () => {
+        const [s1, s2] = await createSampleImages();
+        state.slots[0] = {
+          image: s1.img,
+          mipCanvas: null,
+          thumbUrl: s1.url,
+          name: 'Sample Brand Mark',
+          fit: 'contain',
+          scale: 0.74,
+          offsetX: 0,
+          offsetY: 0,
+        };
+        state.slots[1] = {
+          image: s2.img,
+          mipCanvas: null,
+          thumbUrl: s2.url,
+          name: 'Sample Crest Badge',
+          fit: 'contain',
+          scale: 0.74,
+          offsetX: 0,
+          offsetY: 0,
+        };
+        syncSlotCardsUI();
+        selectFramingSlot(0);
+      };
+
+      await loadDefaultPair();
+      requestAnimationFrame(animationLoop);
+
+      document.getElementById('useSampleBtn').addEventListener('click', async () => {
+        await loadDefaultPair();
+        selectPreset('dual-flip');
+        showToast('Reset to Sample Image 1 & Image 2');
+      });
+
+      const multiFileInput = document.getElementById('multiFileInput');
+      document.getElementById('multiUploadBtn').addEventListener('click', () => multiFileInput.click());
+      multiFileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('image/'));
+        if (files.length >= 2) {
+          loadFileIntoSlot(files[0], 0, true);
+          loadFileIntoSlot(files[1], 1, true);
+          showToast(`Loaded "${files[0].name}" & "${files[1].name}"`);
+        } else if (files.length === 1) {
+          loadFileIntoSlot(files[0], 0);
+        }
+        multiFileInput.value = '';
+      });
+
+      document.getElementById('swapImagesBtn').addEventListener('click', () => {
+        const temp = { ...state.slots[0] };
+        state.slots[0] = { ...state.slots[1] };
+        state.slots[1] = temp;
+        syncSlotCardsUI();
+        selectFramingSlot(state.activeFramingSlot);
+        showToast('Swapped Image 1 and Image 2');
+      });
+
+      [0, 1].forEach((idx) => {
+        const num = idx + 1;
+        const dropZone = document.getElementById(`dropZone${num}`);
+        const fileInput = document.getElementById(`fileInput${num}`);
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        document.getElementById(`replaceBtn${num}`).addEventListener('click', (e) => {
+          e.stopPropagation();
+          fileInput.click();
+        });
+
+        document.getElementById(`removeBtn${num}`).addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (idx === 0 && !state.slots[1].image) {
+            showToast('Keep at least one image uploaded.', true);
+            return;
+          }
+          state.slots[idx].image = null;
+          state.slots[idx].thumbUrl = '';
+          state.slots[idx].name = 'Empty';
+          syncSlotCardsUI();
+          selectFramingSlot(idx === 0 ? 1 : 0);
+          showToast(`Removed Image ${num}`);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+          const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('image/'));
+          if (files.length >= 2) {
+            loadFileIntoSlot(files[0], 0, true);
+            loadFileIntoSlot(files[1], 1, true);
+            showToast('Loaded both images!');
+          } else if (files.length === 1) {
+            loadFileIntoSlot(files[0], idx);
+          }
+          fileInput.value = '';
+        });
+
+        ['dragenter', 'dragover'].forEach((evt) => {
+          dropZone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-[#4f46e5]', 'bg-indigo-50/60');
+          });
+        });
+
+        ['dragleave', 'drop'].forEach((evt) => {
+          dropZone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-[#4f46e5]', 'bg-indigo-50/60');
+          });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+          const files = Array.from(e.dataTransfer?.files || []).filter((f) => f.type.startsWith('image/'));
+          if (files.length >= 2) {
+            loadFileIntoSlot(files[0], 0, true);
+            loadFileIntoSlot(files[1], 1, true);
+            showToast(`Assigned "${files[0].name}" & "${files[1].name}"`);
+          } else if (files.length === 1) {
+            loadFileIntoSlot(files[0], idx);
+          }
+        });
+      });
+
+      document.getElementById('framingTab1').addEventListener('click', () => selectFramingSlot(0));
+      document.getElementById('framingTab2').addEventListener('click', () => selectFramingSlot(1));
+      document.querySelectorAll('.adjust-slot-btn').forEach((btn) => {
+        btn.addEventListener('click', () => selectFramingSlot(Number(btn.dataset.adjustSlot) - 1));
+      });
+
+      document.getElementById('fitContainBtn').addEventListener('click', () => {
+        const slot = state.slots[state.activeFramingSlot];
+        slot.fit = 'contain';
+        slot.scale = 0.74;
+        selectFramingSlot(state.activeFramingSlot);
+      });
+      document.getElementById('fitCoverBtn').addEventListener('click', () => {
+        const slot = state.slots[state.activeFramingSlot];
+        slot.fit = 'cover';
+        slot.scale = 1.0;
+        selectFramingSlot(state.activeFramingSlot);
+      });
+      document.getElementById('resetFramingBtn').addEventListener('click', () => {
+        const slot = state.slots[state.activeFramingSlot];
+        slot.scale = slot.fit === 'cover' ? 1.0 : 0.74;
+        slot.offsetX = 0;
+        slot.offsetY = 0;
+        selectFramingSlot(state.activeFramingSlot);
+      });
+
+      document.getElementById('logoScaleSlider').addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        state.slots[state.activeFramingSlot].scale = val / 100;
+        document.getElementById('logoScaleVal').textContent = `${val}%`;
+      });
+      document.getElementById('offsetXSlider').addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        state.slots[state.activeFramingSlot].offsetX = val / 100;
+        document.getElementById('offsetXVal').textContent = `${val}%`;
+      });
+      document.getElementById('offsetYSlider').addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        state.slots[state.activeFramingSlot].offsetY = val / 100;
+        document.getElementById('offsetYVal').textContent = `${val}%`;
+      });
+
+      // Backdrop Color Swatches, Auto-Blur, Transparent & Custom Picker
+      const bgSwatches = document.querySelectorAll('.bg-swatch');
+      const bgColorPicker = document.getElementById('bgColorPicker');
+      const bgColorHex = document.getElementById('bgColorHex');
+      const autoBlurBtn = document.getElementById('autoBlurBgBtn');
+      const transparentBgBtn = document.getElementById('transparentBgBtn');
+
+      function clearSpecialBgButtons() {
+        autoBlurBtn.classList.remove('border-2', 'border-[#4f46e5]', 'bg-indigo-50', 'text-[#4f46e5]');
+        transparentBgBtn.classList.remove('border-2', 'border-[#4f46e5]', 'bg-indigo-50', 'text-[#4f46e5]');
+      }
+
+      function setBackdropColor(hex) {
+        state.bgMode = 'solid';
+        state.bgColor = hex.toUpperCase();
+        bgColorHex.textContent = state.bgColor;
+        bgColorPicker.value = state.bgColor;
+        clearSpecialBgButtons();
+        bgSwatches.forEach((btn) => {
+          const isMatch = btn.dataset.bg.toUpperCase() === state.bgColor;
+          btn.classList.toggle('border-2', isMatch);
+          btn.classList.toggle('border-[#4f46e5]', isMatch);
+          btn.classList.toggle('border', !isMatch);
+          btn.classList.toggle('border-slate-300', !isMatch);
+        });
+      }
+
+      bgSwatches.forEach((btn) => btn.addEventListener('click', () => setBackdropColor(btn.dataset.bg)));
+      bgColorPicker.addEventListener('input', (e) => setBackdropColor(e.target.value));
+      autoBlurBtn.addEventListener('click', () => {
+        state.bgMode = 'blur';
+        bgColorHex.textContent = 'AUTO-BLUR';
+        clearSpecialBgButtons();
+        bgSwatches.forEach((b) => {
+          b.classList.remove('border-2', 'border-[#4f46e5]');
+          b.classList.add('border', 'border-slate-300');
+        });
+        autoBlurBtn.classList.add('border-2', 'border-[#4f46e5]', 'bg-indigo-50', 'text-[#4f46e5]');
+      });
+      transparentBgBtn.addEventListener('click', () => {
+        state.bgMode = 'transparent';
+        bgColorHex.textContent = 'TRANSPARENT';
+        clearSpecialBgButtons();
+        bgSwatches.forEach((b) => {
+          b.classList.remove('border-2', 'border-[#4f46e5]');
+          b.classList.add('border', 'border-slate-300');
+        });
+        transparentBgBtn.classList.add('border-2', 'border-[#4f46e5]', 'bg-indigo-50', 'text-[#4f46e5]');
+      });
+
+      // Dither / Quality Mode selector
+      const ditherBtns = document.querySelectorAll('.dither-btn');
+      ditherBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.ditherMode = btn.dataset.dither;
+          ditherBtns.forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle('border-2', active);
+            b.classList.toggle('border-[#4f46e5]', active);
+            b.classList.toggle('bg-indigo-50/60', active);
+            b.classList.toggle('border', !active);
+            b.classList.toggle('border-[#e2e8f0]', !active);
+            b.classList.toggle('bg-white', !active);
+          });
+          updateEstimatedStats();
+        });
+      });
+
+      // Preset Filter Tabs & Preset Cards
+      document.getElementById('filterDualBtn').addEventListener('click', () => setPresetFilterTab('dual'));
+      document.getElementById('filterSingleBtn').addEventListener('click', () => setPresetFilterTab('single'));
+      document.querySelectorAll('.preset-card').forEach((card) => {
+        card.addEventListener('click', () => selectPreset(card.dataset.preset));
+      });
+
+      document.getElementById('circleOverlayToggle').addEventListener('change', (e) => {
+        state.showCircleGuide = e.target.checked;
+      });
+      document.getElementById('playPauseBtn').addEventListener('click', () => {
+        state.isPlaying = !state.isPlaying;
+        document.getElementById('pauseIcon').classList.toggle('hidden', !state.isPlaying);
+        document.getElementById('playIcon').classList.toggle('hidden', state.isPlaying);
+        document.getElementById('playPauseLabel').textContent = state.isPlaying ? 'Pause Preview' : 'Resume Preview';
+      });
+
+      // FPS Slider + Quick Preset Pills (up to 60 FPS)
+      const fpsSlider = document.getElementById('fpsSlider');
+      const fpsBtns = document.querySelectorAll('.fps-btn');
+      function setFpsValue(newFps) {
+        state.fps = Math.min(60, Math.max(12, Number(newFps)));
+        fpsSlider.value = state.fps;
+        fpsBtns.forEach((b) => {
+          const active = Number(b.dataset.fps) === state.fps;
+          b.classList.toggle('border-2', active);
+          b.classList.toggle('border-[#4f46e5]', active);
+          b.classList.toggle('bg-indigo-50', active);
+          b.classList.toggle('font-bold', active);
+          b.classList.toggle('text-[#4f46e5]', active);
+          b.classList.toggle('border', !active);
+          b.classList.toggle('border-[#e2e8f0]', !active);
+          b.classList.toggle('bg-white', !active);
+        });
+        updateEstimatedStats();
+      }
+      fpsSlider.addEventListener('input', (e) => setFpsValue(e.target.value));
+      fpsBtns.forEach((btn) => btn.addEventListener('click', () => setFpsValue(btn.dataset.fps)));
+
+      document.getElementById('durationSlider').addEventListener('input', (e) => {
+        state.duration = parseFloat(e.target.value);
+        document.getElementById('durationVal').textContent = `${state.duration.toFixed(1)}s`;
+        updateEstimatedStats();
+      });
+      document.getElementById('holdRatioSlider').addEventListener('input', (e) => {
+        state.holdRatio = Number(e.target.value) / 100;
+        updateEstimatedStats();
+      });
+
+      const resBtns = document.querySelectorAll('.res-btn');
+      resBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.resolution = Number(btn.dataset.res);
+          resBtns.forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle('border-2', active);
+            b.classList.toggle('border-[#4f46e5]', active);
+            b.classList.toggle('bg-indigo-50', active);
+            b.classList.toggle('font-bold', active);
+            b.classList.toggle('text-[#4f46e5]', active);
+            b.classList.toggle('border', !active);
+            b.classList.toggle('border-[#e2e8f0]', !active);
+            b.classList.toggle('bg-white', !active);
+            b.classList.toggle('font-semibold', !active);
+            b.classList.toggle('text-[#475569]', !active);
+          });
+          updateEstimatedStats();
+        });
+      });
+
+      document.getElementById('autoOptimizeToggle').addEventListener('change', (e) => {
+        state.autoOptimize = e.target.checked;
+      });
+      document.getElementById('toggleTipBtn').addEventListener('click', () => {
+        document.getElementById('googleUploadTip').classList.toggle('hidden');
+      });
+
+      document.getElementById('generateBtn').addEventListener('click', generateAndDownloadGif);
+      document.getElementById('topExportBtn').addEventListener('click', generateAndDownloadGif);
+    });
+  </script>
+</body>
+</html>
